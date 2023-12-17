@@ -59,16 +59,16 @@ Dump of assembler code for function _start:
    0x08048078 <+24>:	push   0x20747261
    0x0804807d <+29>:	push   0x74732073
    0x08048082 <+34>:	push   0x2774654c
-   0x08048087 <+39>:	mov    ecx,esp
-   0x08048089 <+41>:	mov    dl,0x14
-   0x0804808b <+43>:	mov    bl,0x1
-   0x0804808d <+45>:	mov    al,0x4
-   0x0804808f <+47>:	int    0x80
-   0x08048091 <+49>:	xor    ebx,ebx
-   0x08048093 <+51>:	mov    dl,0x3c
-   0x08048095 <+53>:	mov    al,0x3
-   0x08048097 <+55>:	int    0x80
-   0x08048099 <+57>:	add    esp,0x14
+   0x08048087 <+39>:	mov    ecx,esp # address of esp into ecx to printout
+   0x08048089 <+41>:	mov    dl,0x14 # number of bytes receive
+   0x0804808b <+43>:	mov    bl,0x1 # fd = 1
+   0x0804808d <+45>:	mov    al,0x4 # syscall for write() 
+   0x0804808f <+47>:	int    0x80 # invoke syscall
+   0x08048091 <+49>:	xor    ebx,ebx # return code 0 if success
+   0x08048093 <+51>:	mov    dl,0x3c # Store 0x3c in edx
+   0x08048095 <+53>:	mov    al,0x3 # syscall for read()
+   0x08048097 <+55>:	int    0x80 # invoke syscall
+   0x08048099 <+57>:	add    esp,0x14 # esp increase
    0x0804809c <+60>:	ret
 End of assembler dump.
 ```
