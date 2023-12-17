@@ -183,3 +183,5 @@ io.sendline( payload)
 # Receive the flag
 io.interactive()
 ```
+
+### Better explanation here -> https://security.nekotricolor.com/entry/pwnable-tw-start-write-up
